@@ -1,0 +1,1 @@
+window["DEQFactory"] = require("./DEQFactory");

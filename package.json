@@ -1,0 +1,31 @@
+{
+    "name": "digitaleventqueue",
+    "version": "1.3.5",
+    "description": "Digital Event Queue",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "mocha-chrome ./test/testrunner.html --ignore-resource-errors",
+        "test:prod": "mocha-chrome ./test/testrunner-prod.html --ignore-resource-errors",
+        "clean": "rimraf dist",
+        "prebuild": "npm run clean -s",
+        "build": "webpack",
+        "postbuild": "npm run test:prod"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@bitbucket.org/adversitement/deq.git"
+    },
+    "author": "Koen Crommentuijn, Wouter Stolk",
+    "license": "LGPL",
+    "homepage": "https://bitbucket.org/adversitement/deq#readme",
+    "devDependencies": {
+        "chai": "4.2.0",
+        "mocha": "7.1.2",
+        "mocha-chrome": "^2.2.0",
+        "path": "^0.12.7",
+        "rimraf": "3.0.0",
+        "uglifyjs-webpack-plugin": "^2.2.0",
+        "webpack": "4.41.5",
+        "webpack-cli": "^3.3.10"
+    }
+}
