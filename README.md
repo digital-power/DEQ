@@ -36,5 +36,5 @@ The current version of DEQ is the result of efforts from the following contribut
 
 ## Copyright
 Digital Event Queue.
-Copyright (c) 2016-2020: Digital Power B.V., All rights reserved.
+[Copyright (c) 2016-2020: Digital Power B.V.](https://github.com/digital-power/DEQ/blob/master/COPYRIGHT.txt), All rights reserved.
 Licensed under the [GNU Lesser General Public License v3.0](https://github.com/digital-power/DEQ/blob/master/LICENSE)
