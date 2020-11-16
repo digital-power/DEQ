@@ -33,3 +33,5 @@ The current version of DEQ is the result of efforts from the following contribut
 * Koen Crommentuijn <koen.crommentuijn@digital-power.com>
 * Wouter Stolk <wouter.stolk@digital-power.com>
 * Martijn Schoenmakers
+
+[DEQ Copyright notice](https://github.com/digital-power/DEQ/blob/master/doc/DEQ-copyright-notice.md)
