@@ -5,26 +5,22 @@
  https://github.com/digital-power/DEQ/blob/master/LICENSE
  **/
 
-/** DEQ Lib v1.3.5 core **/
+/** DEQ Lib core **/
 DigitalEventQueue.prototype = []; // inherit from Array
 DigitalEventQueue.prototype.constructor = DigitalEventQueue; // point constructor to DigitalEventQueue instead of Array
 function DigitalEventQueue(name, previous_commands) {
     var DEQ = this;
-    DEQ["version"] = "1.3.5 core";
-    DEQ["name"] = name;
-    DEQ["listeners"] = [];
-    DEQ["events"] = [];
-    DEQ["history"] = [];
+    DEQ["version"]      = "1.4.0 core";
+    DEQ["name"]         = name;
+    DEQ["listeners"]    = [];
+    DEQ["events"]       = [];
+    DEQ["history"]      = [];
+    DEQ["global"]       = {};
 
     DEQ.__private = {};
     DEQ.__private.lib = {
-        // isArray: tests if parameter is an array and returns true if param is array
-        isArray: function(o) {
-            return o && Object.prototype.toString.call(o) === "[object Array]";
-        },
-
         // mergeObj: recursively merge multiple objects (based on Paul Spaulding http://stackoverflow.com/a/16178864). 
-        // Adjusted by Adversitement to allow Arrays inside the object too.
+        // Customized to support Objects with Arrays
         mergeObj: function() {
             var dst = {},
                 src,
@@ -36,14 +32,8 @@ function DigitalEventQueue(name, previous_commands) {
                 if (Object.prototype.toString.call(src) == "[object Object]") {
                     for (p in src) {
                         if (src.hasOwnProperty(p)) {
-                            if (
-                                Object.prototype.toString.call(src[p]) ==
-                                "[object Object]"
-                            ) {
-                                dst[p] = DEQ.__private.lib.mergeObj(
-                                    dst[p] || {},
-                                    src[p]
-                                );
+                            if (Object.prototype.toString.call(src[p]) == "[object Object]") {
+                                dst[p] = DEQ.__private.lib.mergeObj(dst[p]||{}, src[p]);
                             } else {
                                 dst[p] = DEQ.__private.lib.deepCopy(src[p]);
                             }
@@ -61,26 +51,25 @@ function DigitalEventQueue(name, previous_commands) {
          * @return {mixed} returns a deepCopy
          */
         deepCopy: function(src) {
-            var out;
             switch (Object.prototype.toString.call(src)) {
-            case "[object Object]":
-                // something
-                return DEQ.__private.lib.mergeObj({}, src);
-            case "[object Array]":
-                out = [];
-                for (var i = 0, j=src.length; i<j; i++) {
-                    out[i] = DEQ.__private.lib.deepCopy(src[i]);
-                }
-                return out;
-            default:
-                out = src;
-                return out;
+
+                case "[object Object]":
+                    return DEQ.__private.lib.copyObj(src);
+            
+                case "[object Array]":
+                    var out = [];
+                    for (var i = 0, j=src.length; i<j; i++) {
+                        out[i] = DEQ.__private.lib.deepCopy(src[i]);
+                    }
+                    return out;
+            
+                default:
+                    return src;
             }
         },
 
         // copyObj: returns a copy of an object that does not reference to the object copied from. Circular references in objects are not allowed.
         copyObj: function(obj) {
-            // return JSON.parse(JSON.stringify(obj || {}));
             return DEQ.__private.lib.mergeObj({}, obj);
         },
 
@@ -154,7 +143,7 @@ function DigitalEventQueue(name, previous_commands) {
                 // Check for correct references
                 if (
                     !(
-                        DEQ.__private.lib.isArray(listenerRef) &&
+                        Array.isArray(listenerRef) &&
                         listenerRef.length >= 3
                     )
                 ) {
@@ -165,7 +154,7 @@ function DigitalEventQueue(name, previous_commands) {
                     );
                 } else if (
                     !(
-                        DEQ.__private.lib.isArray(eventRef) &&
+                        Array.isArray(eventRef) &&
                         eventRef.length >= 2
                     )
                 ) {
@@ -219,7 +208,7 @@ function DigitalEventQueue(name, previous_commands) {
         },
 
         // addListener: register a listener and, if needed, publish all former events to this listener
-        //addListener: function(listener_name, callback, event_name, include_history) {
+        // addListener: function(listener_name, callback, event_name, include_history) {
         addListener: function(args) {
             // Test input
             if (
@@ -269,7 +258,7 @@ function DigitalEventQueue(name, previous_commands) {
                 var event_data_copy;
                 // copy event object in event_data, if copy action fails report error and drop event
                 try {
-                    event_data_copy = DEQ.__private.lib.copyObj(args["data"]);
+                    event_data_copy = DEQ.__private.lib.mergeObj(DEQ["global"],args["data"]);
                 } catch (e) {
                     e.deq_event = args["name"];
                     DEQ.__private.lib.logError(
@@ -281,9 +270,9 @@ function DigitalEventQueue(name, previous_commands) {
                 }
 
                 // add event name to event data object
-                event_data_copy["event"] = args["name"];
+                event_data_copy["deq_event"] = args["name"];
                 // add browser timestamp to event data object
-                event_data_copy["event_timestamp_deq"] = new Date().getTime();
+                event_data_copy["deq_event_ts"] = new Date().getTime();
 
                 // store a copy of the event in the event history
                 var eventIndex = DEQ["events"].push([
@@ -313,13 +302,21 @@ function DigitalEventQueue(name, previous_commands) {
                     errorObj
                 );
             }
+        },
+        
+        // Add/Append global data to the queue
+        addGlobalData : function(args){
+            if(typeof args["data"] == "object") {
+                DEQ["global"] = DEQ.__private.lib.mergeObj(DEQ["global"],args["data"]);
+            }
         }
     };
 
     // Map commands to private functions
     DEQ.__private.commandMapping = {
         "ADD EVENT": DEQ.__private.lib.addEvent,
-        "ADD LISTENER": DEQ.__private.lib.addListener
+        "ADD LISTENER": DEQ.__private.lib.addListener,
+        "GLOBAL DATA": DEQ.__private.lib.addGlobalData
     };
 
     // Override push functionality to execute the correct command
@@ -357,7 +354,7 @@ function DigitalEventQueue(name, previous_commands) {
      */
     DEQ.pushBulk = function(commands) {
         // Process events from bulk
-        if (DEQ.__private.lib.isArray(commands)) {
+        if (Array.isArray(commands)) {
             while (commands.length > 0) {
                 DEQ.push(commands.shift());
             }
