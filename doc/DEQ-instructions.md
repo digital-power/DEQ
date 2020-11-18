@@ -26,6 +26,7 @@ window.Queue2 = DEQFactory.get("My Event Queue", window.Queue2);
 
 1. [ADD EVENT](#ADD-EVENT)
 1. [ADD LISTENER](#ADD-LISTENER)
+1. [GLOBAL DATA](#GLOBAL-DATA)
 1. [PERSIST DATA](#PERSIST-DATA)
 1. [DEFER DATA](#DEFER-DATA)
 
@@ -113,6 +114,30 @@ digitalEventQueue.push({
 });
 ```
 
+## GLOBAL DATA ##
+
+The `GLOBAL DATA` command is used to append data to the data-object of each event added to the queue.
+
+### Arguments / Keys ###
+
+| Property key          | Allowed type    | Description                                                                                                                                                                                                                               | Example               | Notes                                                             |
+| --------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------------- |
+| command               | 'GLOBAL DATA'   | the name of the command                                                                                                                                                                                                                   | 'PERSIST DATA'        |                                                                   |
+| data                  | json-object     | the data object holding the data you want to add to the data that is to be persisted                                                                                                                                                      | { user_id : 1234 }    |                                                                   |
+
+
+### Example usage ###
+
+The following code example will add a property `user_id` with value `123` to all events added to the queue 
+
+```
+window.digitalEventQueue = window.digitalEventQueue || [];
+digitalEventQueue.push({
+    command:    'GLOBAL DATA',
+    data:       { 'user_id' : 123 }
+});
+```
+
 ## PERSIST DATA ##
 
 The `PERSIST DATA` command is used to persist data for a specified amount of time for a specified set of events.
@@ -125,7 +150,7 @@ value from the event should be the one that is used above the value of the persi
 | Property key          | Allowed type    | Description                                                                                                                                                                                                                               | Example               | Notes                                                             |
 | --------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------------- |
 | command               | 'PERSIST DATA'  | the name of the command                                                                                                                                                                                                                   | 'PERSIST DATA'        |                                                                   |
-| data                  | json-object     | the data object holding the data you want to add to the data that is to be persisted                                                                                                                                                      | { user_id : 1234 }    | characters allowed: a-z A-Z 0-9 and whitespace                    |
+| data                  | json-object     | the data object holding the data you want to add to the data that is to be persisted                                                                                                                                                      | { user_id : 1234 }    |                                                                   |
 | matchEvent            | string          | a string (that will be parsed as a regex) to select the events this persisted data should be appended to                                                                                                                                  | "pageview"            | note that matching is done using new RegEx('/^'+event_name+'$/i)  |
 | duration _[optional]_ | integer, string | the number of seconds this data should be persisted. Special values are "SESSION" and "PAGELOAD" (case-sensitive) which will persist the data respectively for the browser session or for the page-load (being until the next navigation  | 111600                | default value is "PAGELOAD"                                       |
 | renew _[optional]_    | boolean         | if this boolean is true, every time an event occurs, the lifetime of this data is prolonged with the value of lifetime                                                                                                                    | true                  | default value false. Only works when lifetime is set in seconds.  |       

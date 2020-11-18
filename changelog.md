@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.4.0
+
+**GLOBAL DATA Command**
+
+Added Support in DEQ core for GLOBAL DATA command
+renamed auto-appended variable 'event' to 'deq_event' (**BREAKING CHANGE**)
+renamed auto-appended variable 'event_timestamp_deq' to 'deq_event_ts' (**BREAKING CHANGE**)
+
 ## v1.3.6
 
 **Github and IP migration**
