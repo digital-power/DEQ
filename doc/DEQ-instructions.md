@@ -50,8 +50,6 @@ digitalEventQueue.push({
 
 The conditional definition of the queue allows commands to be pushed independent of the creation/initialisation of a queue (i.e. before the library is loaded or queue initialised). This independence is one of the main benefits of the Digital Event Queue over other datalayer frameworks.
 
-See below a specification of all DEQ Commands and their properties.
-
 ## ADD EVENT ##
 
 The `ADD EVENT` command is used to push/notify the system an event happened. An optional data-object can be included with the event.
@@ -74,7 +72,7 @@ digitalEventQueue.push({
 });
 ```
 
-The conditional definition of the queue (first line in example) is **strongly advised**, see [Command Introduction](#Command-Introduction)
+The conditional definition of the queue (first line in example) is **strongly advised**, see [Command interface](#Command-interface)
 
 ## ADD LISTENER ##
 
@@ -103,6 +101,7 @@ digitalEventQueue.push({
 });
 ```
 
+The conditional definition of the queue (first line in example) is **strongly advised**, see [Command interface](#Command-interface)
 
 ## GLOBAL DATA ##
 
@@ -128,6 +127,7 @@ digitalEventQueue.push({
 });
 ```
 
+The conditional definition of the queue (first line in example) is **strongly advised**, see [Command interface](#Command-interface)
 
 ## PERSIST DATA ##
 
@@ -160,6 +160,7 @@ digitalEventQueue.push({
 });
 ```
 
+The conditional definition of the queue (first line in example) is **strongly advised**, see [Command interface](#Command-interface)
 
 ## DEFER DATA ##
 
@@ -186,3 +187,5 @@ digitalEventQueue.push({
     matchEvent: 'pageview'
 });
 ```
+
+The conditional definition of the queue (first line in example) is **strongly advised**, see [Command interface](#Command-interface)
