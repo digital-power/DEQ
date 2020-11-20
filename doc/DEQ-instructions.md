@@ -1,9 +1,8 @@
 # DEQ Instructions #
 
-
 ## Event Queue Creation ##
 
-After the DEQ library has loaded, a queue can be created using `new DigitalEventQueue(name,queue)`.
+After the DEQ library has loaded, a queue can be created using `new DigitalEventQueue(name, queue)`.
 
 The contructor method has two parameters:
 - name: a name for the queue
@@ -14,8 +13,9 @@ Example:
 window.digitalEventQueue = new DigitalEventQueue("My Event Queue", window.digitalEventQueue);
 ```
 
-## Event Queue Commands ##
+## Commands ##
 
+Available commands for a queue:
 1. [ADD EVENT](#ADD-EVENT)
 1. [ADD LISTENER](#ADD-LISTENER)
 1. [GLOBAL DATA](#GLOBAL-DATA)
@@ -23,7 +23,7 @@ window.digitalEventQueue = new DigitalEventQueue("My Event Queue", window.digita
 1. [DEFER DATA](#DEFER-DATA)
 
 
-## Command Introduction ##
+### Command interface ###
 A DEQ queue extends the standard JavaScript Array object, and its `push` method is used to "push" commands to the queue (e.g. registering events and listeners):
 ```
 digitalEventQueue.push( <command> );
