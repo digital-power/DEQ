@@ -1,20 +1,30 @@
-# DEQ Instructions #
+# DEQ Event Queue Creation & Commands #
 
+**Documentation for DEQ library versions 1.x.x**
 
-## Event Queue Creation ##
+## Event Queue creation ##
 
-After the DEQ library has loaded, a queue can be created using `new DigitalEventQueue(name,queue)`.
+An event queue is created using the DEQFactory.get method. This method takes two parameters; a name and a reference to the DEQ object that is created. The DEQFactory.get method returns the newly created event queue.
 
-The contructor method has two parameters:
-- name: a name for the queue
-- queue: a reference to the existing queue object (optional and can be null)
+Example of creating a global event queue digitalEventQueue with name "My Event Queue":
+```
+window.digitalEventQueue = DEQFactory.get("My Event Queue", window.digitalEventQueue);
+```
+
+**NOTE** An event queue can only be created after the DEQ library has loaded. Events and listerners can be registered at any time, even before the library has loaded.
+
+If a second event queue is created with the same name (first parameter), then a reference is returned to the same queue.
 
 Example:
 ```
-window.digitalEventQueue = new DigitalEventQueue("My Event Queue", window.digitalEventQueue);
+window.Queue1 = DEQFactory.get("My Event Queue", window.Queue1);
+window.Queue2 = DEQFactory.get("My Event Queue", window.Queue2);
+
+// result: Queue1 and Queue2 will reference the same event queue.
 ```
 
-## Event Queue Commands ##
+
+## Commands ##
 
 1. [ADD EVENT](#ADD-EVENT)
 1. [ADD LISTENER](#ADD-LISTENER)
@@ -22,14 +32,21 @@ window.digitalEventQueue = new DigitalEventQueue("My Event Queue", window.digita
 1. [PERSIST DATA](#PERSIST-DATA)
 1. [DEFER DATA](#DEFER-DATA)
 
+## Introduction / usage ##
+Commands (e.g. events pushing, listener registration) are being "pushed" into the queue.
+The commands are formatted as an JSON object which can contain various parameters to be used for the command.
+Therefore one property, having key `command`, is mandatory to be included in the object. 
+Commands that are pushed are hence in the format:
+`
+{
+    command: <command>, 
+    argument1: <argument 1>, 
+    argument2: <argument 2>,
+    ...
+ }
+`
 
-## Command Introduction ##
-A DEQ queue extends the standard JavaScript Array object, and its `push` method is used to "push" commands to the queue (e.g. registering events and listeners):
-```
-digitalEventQueue.push( <command> );
-```
-
-Commands are formatted as JSON objects with a `command` property to specify the command:
+As a concrete example: 
 ```
 { 
   command:  'ADD EVENT', 
@@ -38,25 +55,22 @@ Commands are formatted as JSON objects with a `command` property to specify the 
 }
 ```
 
-It is **strongly advised** to conditionally define a queue before pushing **any** command (see first line below):
-```
-window.digitalEventQueue = window.digitalEventQueue || [];
-digitalEventQueue.push({
-    command:    'ADD EVENT',
-    name:       'pageview',
-    data:       { 'page_name' : 'homepage' }
-});
-```
+**NOTE** _The value of the command-property can be considered a constant. Therefore we use uppercasing for the commands in our 
+naming convention. 
+Although the current version of DEQ uses a case-insensitive match for commands, this might be changed in the future. 
+Hence we stronly advice to use upper-casing for the command names._ 
 
-The conditional definition of the queue allows commands to be pushed independent of the creation/initialisation of a queue (i.e. before the library is loaded or queue initialised). This independence is one of the main benefits of the Digital Event Queue over other datalayer frameworks.
+**NOTE** _For users of the former `adv_event` queue, please note that with using DEQ the `.on`-method for registering event handlers is replaced by a command `ADD LISTENER` that is now to be pushed to the queue._  
 
-See below a specification of all DEQ Commands and their properties.
-
+Below you will find a list of the current accepted commands including the a description of the arguments that can/should be used for the various commands.
+ 
 ## ADD EVENT ##
 
-The `ADD EVENT` command is used to push/notify the system an event happened. An optional data-object can be included with the event.
+The `ADD EVENT` command is used to push/notify the system an event happened. 
+An optional data-object can be included in the event.
 
-### Properties ###
+
+### Arguments / Keys ###
 
 | Property key          | Allowed type | Description                                                                | Example                       | Notes                                             |
 | --------------------- | ------------ | -------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------- |
@@ -64,7 +78,7 @@ The `ADD EVENT` command is used to push/notify the system an event happened. An 
 | name                  | string       | the name of the event                                                      | 'pageview'                    | Characters allowed: a-z A-Z 0-9 and whitespace    |
 | data _[optional]_     | JSON-object  | a data object holding all properties that will be send to the listeners    | { 'page_name' : 'homepage' }  |                                                   |
 
-Example:
+### Example usage ###
 ```
 window.digitalEventQueue = window.digitalEventQueue || [];
 digitalEventQueue.push({
@@ -74,13 +88,12 @@ digitalEventQueue.push({
 });
 ```
 
-The conditional definition of the queue (first line in example) is **strongly advised**, see [Command Introduction](#Command-Introduction)
-
 ## ADD LISTENER ##
 
-The `ADD LISTENER` command is used to register a listener with a callback function that will be called everytime an event that matches the (regex) string in the matchEvent property occurs.
+The `ADD LISTENER` command is used to register a listener with a callback function that will be called everytime an 
+event that matches the (regex) string in the matchEvent property occurs.
 
-### Properties ###
+### Arguments / Keys ###
 
 | Property key              | Allowed type    | Description                                                                                                                                                                                                                             | Example                                                                                   | Notes                                                                                                     |
 | ------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -90,7 +103,7 @@ The `ADD LISTENER` command is used to register a listener with a callback functi
 | name _[optional]_         | string          | a human readable identifier to elaborate in debugging and error logging                                                                                                                                                                 | 'Console log all event'                                                                   | Characters allowed: a-z A-Z 0-9 and whitespace                                                            |
 | skipHistory _[optional]_  | boolean         | a boolean to denote if the callback function should not be called for the matching events that have already been pushed within page-load before the listener was registered.                                                            | false                                                                                     | Default value false                                                                                       |
 
-_Events with the reserved name `deq error` will not match listeners with matchEvent `.*` to prevent infinite loops from occurring._
+**NOTE** _Please be aware that the special events with name `DEQ error` will not be matching listeners with matchEvent `.*` as a precaution against creating infinite loops._
 
 ### Example usage ###
 ```
@@ -103,12 +116,11 @@ digitalEventQueue.push({
 });
 ```
 
-
 ## GLOBAL DATA ##
 
 The `GLOBAL DATA` command is used to append data to the data-object of each event added to the queue.
 
-### Properties ###
+### Arguments / Keys ###
 
 | Property key          | Allowed type    | Description                                                                                                                                                                                                                               | Example               | Notes                                                             |
 | --------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------------- |
@@ -128,7 +140,6 @@ digitalEventQueue.push({
 });
 ```
 
-
 ## PERSIST DATA ##
 
 The `PERSIST DATA` command is used to persist data for a specified amount of time for a specified set of events.
@@ -136,7 +147,7 @@ When a matching event occurs, the data from that event should be extended with t
 In case of conflicting data, i.e. the event has a value for the same property as where persisted data for exists, the 
 value from the event should be the one that is used above the value of the persisted data. 
 
-### Properties ###
+### Arguments / Keys ###
 
 | Property key          | Allowed type    | Description                                                                                                                                                                                                                               | Example               | Notes                                                             |
 | --------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------------- |
@@ -160,13 +171,12 @@ digitalEventQueue.push({
 });
 ```
 
-
 ## DEFER DATA ##
 
 The `DEFER DATA` command is used to persist data *only up and until the next occurrence* of an event that matches the event_name parameter within a browser session. 
 After the data is added once, on the next occurrence of an event that matches event_name the data will not be added again (unless it is actively deferred again). 
 
-### Properties ###
+### Arguments / Keys ###
 
 | Property key  | Allowed type  | Description                                                                                               | Example                                                                                   | Notes                                                             |
 | ------------- | ------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
