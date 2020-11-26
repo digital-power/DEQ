@@ -22,6 +22,14 @@ the command ``npm run build`` in your console, which will create an output file 
 By default the persist plugin is added to the package, though if you have no intent of using this, we advice to disable
 (remove) the DigitalEventQueueWithPersist.js file.
 
+## Supported Browsers ##
+
+The DEQ library is written in JavaScript ECMAScript Version 5 and supports all major browsers.
+
+| Chrome  | Edge   | FireFox | IE      | Safari  |
+| ------- | ------ | ------- | ------- | ------- |
+| 5+      | 12+    | 4+      | 9+      | 5+      |
+
 ## Changelog ##
 
 See [changelog](https://github.com/digital-power/DEQ/blob/master/changelog.md) for a full list of changes.

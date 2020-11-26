@@ -3,7 +3,9 @@
     "version": "2.0.0",
     "description": "Digital Event Queue",
     "scripts": {
-        "minifyJS": "uglifyjs src/DEQcore.js --compress --mangle --warn --comments --source-map --output build/DEQcore.min.js",
+        "minifyJS": "uglifyjs src/DEQcore.js --compress --mangle reserved=['DigitalEventQueue'] --warn --comments --source-map --output build/DEQcore.min.js",
+        "prebuild": "rimraf build/*",
+        "postbuild": "copyfiles --up 1 build/*.js test/",
         "build": "npm run minifyJS"
     },
     "repository": {
@@ -14,6 +16,8 @@
     "license": "LGPL",
     "homepage": "https://github.com/digital-power/DEQ",
     "devDependencies": {
-        "uglify-js": "^3.11.6"
+        "uglify-js": "^3.12.0",
+        "copyfiles": "^2.4.0",
+        "rimraf": "^3.0.2"
     }
 }

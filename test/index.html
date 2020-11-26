@@ -1,0 +1,529 @@
+<html>
+<head>
+    <title>DEQ TEST</title>
+    <style type="text/css" media="screen">body{line-height:140%;margin:50px;font-family:verdana,arial,sans-serif;width:1000px}code{font-size:120%}pre code{background-color:#eee;border:1px solid #999;display:block;padding:20px}</style>
+</head>
+
+<body>
+
+<h1>DEQ TEST</h1>
+<br>
+<h3>Test Cases:</h3>
+<pre><code id="results"></code></pre>
+
+
+<script>
+
+window.jsErrors = false;
+window.onerror = function(message, file, line) {
+    jsErrors = true;
+};
+
+window.pass = {};
+
+//UNIT TESTING: 
+
+window.testQueue = window.testQueue || [];
+window.testCases = {};
+
+//commands before queue creation:
+//GLOBAL DATA {init : false, cmd: "GLOBAL DATA"}
+
+testQueue.push( {   command : "GLOBAL DATA", 
+                    data    : { init    : false, 
+                                cmd     : "GLOBAL DATA" }
+                });
+
+//ADD EVENT test-before {cmd: "ADD EVENT"}
+testQueue.push( {   command : "ADD EVENT", 
+                    name    : "test-before",
+                    data    : { cmd     : "ADD EVENT" }
+                });
+
+//ADD LISTENER for event test-before
+testQueue.push( {   command     : "ADD LISTENER", 
+                    name        : "listener-t1",
+                    matchEvent  : "test-before",
+                    handler     : function(a,b){
+                        window.listener_t1 = window.listener_t1 || [];
+                        window.listener_t1.push([a,b]); 
+                    }
+                });
+
+//ADD LISTENER for event .*
+testQueue.push( {   command     : "ADD LISTENER", 
+                    name        : "listener-t2",
+                    matchEvent  : ".*",
+                    handler     : function(a,b){
+                        window.listener_t2 = window.listener_t2 || [];
+                        window.listener_t2.push([a,b]); 
+                    }
+                });
+
+//library load
+</script>
+<script src="DEQcore.min.js"></script>
+<script>
+
+/* TEST 1 */
+var test =  "01 library load";
+window.pass[test] = true;
+// EXPECT no JS Errors
+if(jsErrors) {
+    window.pass[test] = false;
+    jsErrors = false;
+}
+// EXPECT DigitalEventQueue defined
+if(typeof(DigitalEventQueue)!=="function") {
+    window.pass[test] = false;
+}
+
+//queue creation
+window.testQueue = new DigitalEventQueue("DEQ TEST", window.testQueue);
+
+/* TEST 2 */
+var test =  "02 queue creation";
+window.pass[test] = true;
+
+// EXPECT no JS Errors
+if(jsErrors) {
+    window.pass[test] = false;
+    jsErrors = false;
+}
+
+// EXPECT testQueue of type DigitalEventQueue
+if(Object.getPrototypeOf(testQueue).constructor !== DigitalEventQueue) {
+    window.pass[test] = false;
+}
+
+// EXPECT testQueue.version with populated string
+if(typeof(testQueue.version)!=="string" || testQueue.version === "") {
+    window.pass[test] = false;
+}
+
+/* TEST 3 */
+var test =  "03 GLOBAL DATA - PRE";
+window.pass[test] = true;
+
+//EXPECT testQueue.history[0].command = "GLOBAL DATA"
+if(testQueue.history[0].command !== "GLOBAL DATA") {
+    window.pass[test] = false;
+}
+
+//EXPECT testQueue.global.init === false
+if(testQueue.global.init !== false) {
+    window.pass[test] = false;
+}
+
+//EXPECT testQueue.global.cmd === "GLOBAL DATA"
+if(testQueue.global.cmd !== "GLOBAL DATA") {
+    window.pass[test] = false;
+}
+
+//EXPECT testQueue.events[0][1].init === false
+if(testQueue.events[0][1].init !== false) {
+    window.pass[test] = false;
+}  
+
+//EXPECT testQueue.events[0][1].cmd === "ADD EVENT"
+if(testQueue.events[0][1].cmd !== "ADD EVENT") {
+    window.pass[test] = false;
+}  
+
+ /* TEST 4 */
+var test =  "04 ADD EVENT - PRE";
+window.pass[test] = true;
+
+//EXPECT testQueue.history[1].command = "ADD EVENT"
+if(testQueue.history[1].command !== "ADD EVENT") {
+    window.pass[test] = false;
+}  
+
+//EXPECT testQueue.events[0][0] === "test-before"
+if(testQueue.events[0][0] !== "test-before") {
+    window.pass[test] = false;
+}  
+
+ /* TEST 5 */
+var test =  "05 ADD LISTENER test-before - PRE";
+window.pass[test] = true;
+//EXPECT testQueue.history[2].command = "ADD LISTENER"
+if(testQueue.history[2].command !== "ADD LISTENER") {
+    window.pass[test] = false;
+}  
+//EXPECT testQueue.listeners[0][0] === "listener-t1"
+if(testQueue.listeners[0][0] !== "listener-t1") {
+    window.pass[test] = false;
+}
+//EXPECT testQueue.listeners[0][1] === "test-before"
+if(testQueue.listeners[0][1] !== "test-before") {
+    window.pass[test] = false;
+}
+//EXPECT Array.isArray(listener_t1) AND listener_t1.length === 1 
+if(typeof(listener_t1)==="undefined" || !Array.isArray(listener_t1) || listener_t1.length!==1) {
+    window.pass[test] = false;
+}
+
+/* TEST 6 */
+var test =  "06 ADD LISTENER .* - PRE";
+window.pass[test] = true;
+//EXPECT testQueue.history[3].command = "ADD LISTENER"
+if(testQueue.history[3].command !== "ADD LISTENER") {
+    window.pass[test] = false;
+}
+//EXPECT testQueue.listeners[1][0] === "listener-t2"
+if(testQueue.listeners[1][0] !== "listener-t2") {
+    window.pass[test] = false;
+}
+//EXPECT testQueue.listeners[1][1] === ".*"
+if(testQueue.listeners[1][1] !== ".*") {
+    window.pass[test] = false;
+}
+//EXPECT Array.isArray(listener_t2) AND listener_t2.length === 1 
+if(typeof(listener_t2)==="undefined" || !Array.isArray(listener_t2) || listener_t2.length!==1) {
+    window.pass[test] = false;
+}
+
+
+//commands after queue creation:
+//GLOBAL DATA {init : true, cmd: "GLOBAL DATA"}
+
+testQueue.push( {   command : "GLOBAL DATA", 
+                    data    : { init    : true, 
+                                cmd     : "GLOBAL DATA" }
+                });
+
+//EXPECT testQueue.history[4].command = "GLOBAL DATA"
+//EXPECT testQueue.global.init === true
+//EXPECT testQueue.global.cmd === "GLOBAL DATA"
+
+/* TEST 7 */
+var test =  "07 GLOBAL DATA - POST";
+window.pass[test] = true;
+
+if(testQueue.history[4].command !== "GLOBAL DATA") {
+    window.pass[test] = false;
+}
+if(testQueue.global.init !== true) {
+    window.pass[test] = false;
+}
+if(testQueue.global.cmd !== "GLOBAL DATA") {
+    window.pass[test] = false;
+}
+
+
+//ADD EVENT test-after {cmd: "ADD EVENT"}
+
+testQueue.push( {   command : "ADD EVENT", 
+                    name    : "test-after",
+                    data    : { cmd     : "ADD EVENT" }
+                });
+
+//EXPECT testQueue.history[5].command = "ADD EVENT"
+//EXPECT testQueue.events[1][0] === "test-after"
+//EXPECT testQueue.events[1][1].init === true
+//EXPECT testQueue.events[1][1].cmd === "ADD EVENT"
+//EXPECT Array.isArray(listener_t2) AND listener_t2.length === 2
+
+/* TEST 8 */
+var test =  "08 ADD EVENT - POST";
+window.pass[test] = true;
+
+if(testQueue.history[5].command !== "ADD EVENT") {
+    window.pass[test] = false;
+}  
+if(testQueue.events[1][0] !== "test-after") {
+    window.pass[test] = false;
+}
+if(testQueue.events[1][1].init !== true) {
+    window.pass[test] = false;
+}  
+if(testQueue.events[1][1].cmd !== "ADD EVENT") {
+    window.pass[test] = false;
+}
+if(typeof(listener_t2)==="undefined" || !Array.isArray(listener_t2) || listener_t2.length!==2) {
+    window.pass[test] = false;
+}    
+
+
+
+//ADD LISTENER for event test-after
+
+testQueue.push( {   command     : "ADD LISTENER", 
+                    name        : "listener-t3",
+                    matchEvent  : "test-after",
+                    handler     : function(a,b){
+                        window.listener_t3 = window.listener_t3 || [];
+                        window.listener_t3.push([a,b]); 
+                    }
+                });
+
+//EXPECT testQueue.history[6].command = "ADD LISTENER"
+//EXPECT testQueue.listeners[2][0] === "listener-t3"
+//EXPECT testQueue.listeners[2][1] === "test-after"
+//EXPECT Array.isArray(listener_t3) AND listener_t3.length === 1
+
+/* TEST 9 */
+var test =  "09 ADD LISTENER test-after - POST";
+window.pass[test] = true;
+if(testQueue.history[6].command !== "ADD LISTENER") {
+    window.pass[test] = false;
+}  
+if(testQueue.listeners[2][0] !== "listener-t3") {
+    window.pass[test] = false;
+}
+if(testQueue.listeners[2][1] !== "test-after") {
+    window.pass[test] = false;
+}
+if(typeof(listener_t3)==="undefined" || !Array.isArray(listener_t3) || listener_t3.length!==1) {
+    window.pass[test] = false;
+}
+
+
+
+//ADD LISTENER for event .*
+
+testQueue.push( {   command     : "ADD LISTENER", 
+                    name        : "listener-t4",
+                    matchEvent  : ".*",
+                    handler     : function(a,b){
+                        window.listener_t4 = window.listener_t4 || [];
+                        window.listener_t4.push([a,b]);                     
+                    }
+                });
+
+//EXPECT testQueue.history[7].command = "ADD LISTENER"
+//EXPECT testQueue.listeners[3][0] === "listener-t4"
+//EXPECT testQueue.listeners[3][1] === ".*"
+
+/* TEST 10 */
+var test =  "10 ADD LISTENER .* - POST";
+window.pass[test] = true;
+if(testQueue.history[7].command !== "ADD LISTENER") {
+    window.pass[test] = false;
+}  
+if(testQueue.listeners[3][0] !== "listener-t4") {
+    window.pass[test] = false;
+}
+if(testQueue.listeners[3][1] !== ".*") {
+    window.pass[test] = false;
+}
+if(typeof(listener_t4)==="undefined" || !Array.isArray(listener_t4) || listener_t4.length!==2) {
+    window.pass[test] = false;
+}
+
+
+
+//ADD LISTENER for event test-after with runtime javascript error
+
+testQueue.push( {   command     : "ADD LISTENER", 
+                    name        : "listener-t5",
+                    matchEvent  : "test-after",
+                    handler     : function(a,b){
+                        window["generate runtime js error"].test;
+                    }
+                });
+                
+//EXPECT testQueue.events[2][0]                 === "deq error"
+//EXPECT testQueue.events[2][1].deq_error_type  === "listener"
+//EXPECT testQueue.events[2][1].deq_error_event === "test-after"       
+                
+/* TEST 11 */
+var test =  "11 ADD LISTENER with JavaScript issue - POST";
+window.pass[test] = true;
+
+// EXPECT no JS Errors
+if(jsErrors) {
+    window.pass[test] = false;
+    jsErrors = false;
+}
+if(testQueue.events[2][0] !== "deq error") {
+    window.pass[test] = false;
+}
+if(testQueue.events[2][1].deq_error_type !== "listener") {
+    window.pass[test] = false;
+}
+if(testQueue.events[2][1].deq_error_event !== "test-after") {
+    window.pass[test] = false;
+}
+                  
+
+
+
+//ADD EVENT test-complex with complex object  {cmd: "ADD EVENT", cObj: { myArr : [ myString: "string", myNumber: 12345, myBool: true, myObj : { i1:"i1": i2: "i2"}, myNull: null, myUndefined: <undefined>] }};
+
+var undefinedVar;
+testQueue.push( {   command : "ADD EVENT", 
+                    name    : "test-complex",
+                    data    : { cmd     : "ADD EVENT",
+                                cObj    : { myArr   :   [   "string",
+                                                            12345, 
+                                                            true,
+                                                            {   myString    : "string",
+                                                                myNumber    : 12345, 
+                                                                myBool      : true,
+                                                                myObj       : { i1 : "i1",
+                                                                                i2 : "i2"},
+                                                                myNull      : null,
+                                                                myUndefined : undefinedVar },
+                                                            null,
+                                                            undefinedVar  ]
+                                          }
+                              }
+                });
+
+//EXPECT testQueue.history[9].command === "ADD EVENT"
+//EXPECT testQueue.events[3][0] === "test-complex"
+//EXPECT testQueue.events[3][1].init === true
+//EXPECT testQueue.events[3][1].cmd === "ADD EVENT"
+//EXPECT testQueue.events[3][1].cObj.myArr[0] === "string"
+//EXPECT testQueue.events[3][1].cObj.myArr[1] === 12345
+//EXPECT testQueue.events[3][1].cObj.myArr[2] === true
+//EXPECT testQueue.events[3][1].cObj.myArr[3].myString === "string"
+//EXPECT testQueue.events[3][1].cObj.myArr[3].myNumber === 12345
+//EXPECT testQueue.events[3][1].cObj.myArr[3].myBool === true
+//EXPECT testQueue.events[3][1].cObj.myArr[3].myObj.i1 === "i1" 
+//EXPECT testQueue.events[3][1].cObj.myArr[3].myNull === null
+//EXPECT typeof(testQueue.events[3][1].cObj.myArr[3].myUndefined) === "undefined"
+//EXPECT testQueue.events[3][1].cObj.myArr[4] === null
+//EXPECT typeof(testQueue.events[3][1].cObj.myArr[5]) === "undefined"
+//EXPECT listeners to match up                
+
+/* TEST 12 */
+var test =  "12 ADD EVENT - COMPLEX";
+window.pass[test] = true;
+
+if(testQueue.history[9].command !== "ADD EVENT") {
+    window.pass[test] = false;
+}
+if(typeof(listener_t2)==="undefined" || !Array.isArray(listener_t2) || listener_t2.length!==3) {
+    window.pass[test] = false;
+}    
+if(listener_t2[2][0] !== "test-complex") {
+    window.pass[test] = false;
+}
+if(listener_t2[2][1].init !== true) {
+    window.pass[test] = false;
+}
+if(listener_t2[2][1].cmd !== "ADD EVENT") {
+    window.pass[test] = false;
+}
+if(listener_t2[2][1].cObj.myArr[0] !== "string") {
+    window.pass[test] = false;
+}
+if(listener_t2[2][1].cObj.myArr[1] !== 12345) {
+    window.pass[test] = false;
+}
+if(listener_t2[2][1].cObj.myArr[2] !== true) {
+    window.pass[test] = false;
+}
+if(listener_t2[2][1].cObj.myArr[3].myString !== "string") {
+    window.pass[test] = false;
+}
+if(listener_t2[2][1].cObj.myArr[3].myNumber !== 12345) {
+    window.pass[test] = false;
+}
+if(listener_t2[2][1].cObj.myArr[3].myBool !== true) {
+    window.pass[test] = false;
+}
+if(listener_t2[2][1].cObj.myArr[3].myObj.i1 !== "i1") {
+    window.pass[test] = false;
+}
+if(listener_t2[2][1].cObj.myArr[3].myNull !== null) {
+    window.pass[test] = false;
+}
+if(typeof(listener_t2[2][1].cObj.myArr[3].myUndefined) !== "undefined") {
+    window.pass[test] = false;
+}
+if(listener_t2[2][1].cObj.myArr[4] !== null) {
+    window.pass[test] = false;
+}
+if(typeof(listener_t2[2][1].cObj.myArr[5]) !== "undefined") {
+    window.pass[test] = false;
+}
+       
+
+                
+
+// duplicate library
+</script>
+<script src="DEQcore.min.js"></script>
+<script>
+/* TEST 13 */
+var test =  "13 Duplicate DEQ Library";
+window.pass[test] = true;
+// EXPECT no JS Errors
+if(jsErrors) {
+    window.pass[test] = false;
+    jsErrors = false;
+}
+// EXPECT DigitalEventQueue defined
+if(typeof(DigitalEventQueue)!=="function") {
+    window.pass[test] = false;
+}
+// EXPECT DigitalEventQueue.queue["DEQ TEST"] to exist
+if(DigitalEventQueue.queue["DEQ TEST"].history.length!==11) {
+    window.pass[test] = false;
+}
+
+
+// duplicate queue creation
+window.testQueue = new DigitalEventQueue("DEQ TEST", window.testQueue);
+window.testQueue = new DigitalEventQueue("DEQ TEST", window.testQueue);
+window.testQueue = new DigitalEventQueue("DEQ TEST", window.testQueue);
+    
+/* TEST 14 */
+var test =  "14 Duplicate Queue Creation";
+window.pass[test] = true;
+// EXPECT no JS Errors
+if(jsErrors) {
+    window.pass[test] = false;
+    jsErrors = false;
+}
+if(window.testQueue.history.length!==11){
+    window.pass[test] = false;
+}
+
+
+/*
+
+SCENARIO:
+
+Event Data Isolation & Listener Execution Test
+1. ADD LISTENER for event 'test-listener-push' that manipulates eventData
+2. ADD LISTENER for event 'test-listener-push' with should receive the unmanipulated data
+3. ADD LISTENER for event 'test-complex' that executes ADD-EVENT 'test-listener-push'
+4. ADD LISTENER for event 'test-listener-push' that manipulates eventData
+5. ADD LISTENER for event 'test-listener-push' with should receive the unmanipulated data
+Expected: At steps 3 and 5, the original complex object should be passed to the listener
+Expected At step 3, the expected order of exectution is listener from step 1, listener from step 2, completion of listener of step 3.
+
+*/
+
+
+
+</script>
+
+<script>
+    var codeArea = document.getElementById("results");
+    var text = "";
+    var result;
+    
+    Object.keys(pass).forEach(function(test) {
+        if(pass[test]) {
+            result = "pass";
+            text += "<span style='color:green'>" + test + ": pass</span>\n";
+        } else {
+            result = "fail";
+            text += "<span style='color:red'>" + test + ": fail</span>\n";
+        }
+        
+        
+    });
+    
+    codeArea.innerHTML = text;
+</script>
+
+
+</body>
+</html>
