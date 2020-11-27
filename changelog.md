@@ -4,60 +4,60 @@
 
 **Major refactor of DEQ core library**
 
-updated DEQ-instructions documentation to reflect changes
-full refactor of DEQ core class
-removed DEQFactory pattern (**BREAKING CHANGE**)
-removed webpack wrapper
-removal of distribute as npm package feature (temporary)
-added supported browsers to README
-replaced testframwork, with simple but complete testpage (www/libtest.html)
-use uglify-js instead of uglifyjs-webpack
-archived v1.x library resources
+- updated DEQ-instructions documentation to reflect changes
+- full refactor of DEQ core class
+- removed DEQFactory pattern (**BREAKING CHANGE**)
+- removed webpack wrapper
+- removal of distribute as npm package feature (temporary)
+- added supported browsers to README
+- replaced testframwork, with simple but complete testpage (www/libtest.html)
+- use uglify-js instead of uglifyjs-webpack
+- archived v1.x library resources
 
 ## v1.4.0
 
 **GLOBAL DATA Command**
 
-Added Support in DEQ core for GLOBAL DATA command
-renamed auto-appended variable 'event' to 'deq_event' (**BREAKING CHANGE**)
-renamed auto-appended variable 'event_timestamp_deq' to 'deq_event_ts' (**BREAKING CHANGE**)
+- Added Support in DEQ core for GLOBAL DATA command
+- renamed auto-appended variable 'event' to 'deq_event' (**BREAKING CHANGE**)
+- renamed auto-appended variable 'event_timestamp_deq' to 'deq_event_ts' (**BREAKING CHANGE**)
 
 ## v1.3.6
 
 **Github and IP migration**
 
-Migrated repository from bitbucket to github
-Migrated IP from Insite Properties BV (Adversitement) to Digital-Power
+- Migrated repository from bitbucket to github
+- Migrated IP from Insite Properties BV (Adversitement) to Digital-Power
 
 ## v1.3.5
 
 **Update cookie SameSite attribute**
 
-Set SameSite cookie attribute to Lax for all cookies written by Persist interface.
+- Set SameSite cookie attribute to Lax for all cookies written by Persist interface.
 
 ## v1.3.4
 
 **Replaced compiler**
 
-Replaced Google Closure Compiler with UglifyJS in Webpack build.
+- Replaced Google Closure Compiler with UglifyJS in Webpack build.
 
 ## v1.3.3
 
 **Update cookie lifetime**
 
-Updated default cookie lifetime to 2 years.
+- Updated default cookie lifetime to 2 years.
 
 ## v1.3.2
 
 **Update dependencies**
 
-Updated vulnerable dependencies and replaced PhantomJS test runner with headless Chrome.
+- Updated vulnerable dependencies and replaced PhantomJS test runner with headless Chrome.
 
 ## v1.3.1
 
 **Fix issue in defer functionality**
 
-A bug in defer was preventing this functionality to set a cookie with a correct
+- A bug in defer was preventing this functionality to set a cookie with a correct
 name. This is now fixed.
 
 ## v1.3.0
