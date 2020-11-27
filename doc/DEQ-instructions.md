@@ -1,5 +1,7 @@
 # DEQ Instructions #
 
+*Instructions for the previous v1.x versions of the DEQ library can be found here: [DEQ-instructions-v1.x.md](https://github.com/digital-power/DEQ/blob/master/doc/DEQ-instructions-v1.x.md).*
+
 ## Event Queue Creation ##
 
 After the DEQ library has loaded, a queue can be created using `new DigitalEventQueue(name, queue)`.
@@ -19,8 +21,6 @@ Available commands for a queue:
 1. [ADD EVENT](#ADD-EVENT)
 1. [ADD LISTENER](#ADD-LISTENER)
 1. [GLOBAL DATA](#GLOBAL-DATA)
-1. [PERSIST DATA](#PERSIST-DATA)
-1. [DEFER DATA](#DEFER-DATA)
 
 
 ### Command interface ###
@@ -124,67 +124,6 @@ window.digitalEventQueue = window.digitalEventQueue || [];
 digitalEventQueue.push({
     command:    'GLOBAL DATA',
     data:       { 'user_id' : 123 }
-});
-```
-
-The conditional definition of the queue (first line in example) is **strongly advised**, see [Command interface](#Command-interface)
-
-## PERSIST DATA ##
-
-The `PERSIST DATA` command is used to persist data for a specified amount of time for a specified set of events.
-When a matching event occurs, the data from that event should be extended with the persisted data.
-In case of conflicting data, i.e. the event has a value for the same property as where persisted data for exists, the 
-value from the event should be the one that is used above the value of the persisted data. 
-
-### Properties ###
-
-| Property key          | Allowed type    | Description                                                                                                                                                                                                                               | Example               | Notes                                                             |
-| --------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------------- |
-| command               | 'PERSIST DATA'  | the name of the command                                                                                                                                                                                                                   | 'PERSIST DATA'        |                                                                   |
-| data                  | json-object     | the data object holding the data you want to add to the data that is to be persisted                                                                                                                                                      | { user_id : 1234 }    |                                                                   |
-| matchEvent            | string          | a string (that will be parsed as a regex) to select the events this persisted data should be appended to                                                                                                                                  | "pageview"            | note that matching is done using new RegEx('/^'+event_name+'$/i)  |
-| duration _[optional]_ | integer, string | the number of seconds this data should be persisted. Special values are "SESSION" and "PAGELOAD" (case-sensitive) which will persist the data respectively for the browser session or for the page-load (being until the next navigation  | 111600                | default value is "PAGELOAD"                                       |
-| renew _[optional]_    | boolean         | if this boolean is true, every time an event occurs, the lifetime of this data is prolonged with the value of lifetime                                                                                                                    | true                  | default value false. Only works when lifetime is set in seconds.  |       
-
-### Example usage ###
-
-The following code example will add a property `user_id` with value `123` to all `pageview` events within the browser session. 
-
-```
-window.digitalEventQueue = window.digitalEventQueue || [];
-digitalEventQueue.push({
-    command:    'PERSIST DATA',
-    data:       { 'user_id' : 123 }, 
-    matchEvent: 'pageview',
-    duration:   'SESSION'
-});
-```
-
-The conditional definition of the queue (first line in example) is **strongly advised**, see [Command interface](#Command-interface)
-
-## DEFER DATA ##
-
-The `DEFER DATA` command is used to persist data *only up and until the next occurrence* of an event that matches the event_name parameter within a browser session. 
-After the data is added once, on the next occurrence of an event that matches event_name the data will not be added again (unless it is actively deferred again). 
-
-### Properties ###
-
-| Property key  | Allowed type  | Description                                                                                               | Example                                                                                   | Notes                                                             |
-| ------------- | ------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| command       | 'DEFER DATA'  | the name of the command                                                                                   | 'DEFER DATA'        |                                                                     |                                                                   |
-| data          | json-object   | the data object holding the data you want to add to the data that is to be persisted                      | { page_previous_page_name : "home", page_previous_page_url: "http://www.example.org/" }   |                                                                   |
-| matchEvent    | string        | a string (that will be parsed as a regex) to select the events this persisted data should be appended to  | "pageview"                                                                                | note that matching is done using new RegEx('/^'+event_name+'$/i)  |
-
-### Example usage ###
-
-The following code example will add a property `page_previous_page_name` with value `homepage` to the next `pageview` event (that happens within a browser session!). 
-
-```
-window.digitalEventQueue = window.digitalEventQueue || [];
-digitalEventQueue.push({
-    command:    'DEFER DATA',
-    data:       { 'page_previous_page_name' : 'homepage' }, 
-    matchEvent: 'pageview'
 });
 ```
 

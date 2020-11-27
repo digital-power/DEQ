@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.0.0
+
+**Major refactor of DEQ core library**
+
+updated DEQ-instructions documentation to reflect changes
+full refactor of DEQ core class
+removed DEQFactory pattern (**BREAKING CHANGE**)
+removed webpack wrapper
+removal of distribute as npm package feature (temporary)
+added supported browsers to README
+replaced testframwork, with simple but complete testpage (www/libtest.html)
+use uglify-js instead of uglifyjs-webpack
+archived v1.x library resources
+
 ## v1.4.0
 
 **GLOBAL DATA Command**
