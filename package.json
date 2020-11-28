@@ -5,7 +5,7 @@
     "scripts": {
         "minifyJS": "uglifyjs src/DEQcore.js --compress --mangle reserved=['DigitalEventQueue'] --warn --comments --source-map --output build/DEQcore.min.js",
         "prebuild": "rimraf build/*",
-        "postbuild": "copyfiles --up 1 build/*.js test/",
+        "postbuild": "copyfiles --up 1 build/*.js www/",
         "build": "npm run minifyJS"
     },
     "repository": {

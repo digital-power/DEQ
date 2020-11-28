@@ -40,6 +40,9 @@ if(typeof(DigitalEventQueue)!=="function") {
                 logError("push", "invalid input", {input: args});
             }
         };
+        
+        // Overwrite unshift functionality to function as push
+        DEQ.unshift = DEQ.push;
     
         /** private methods **/
         var isObject = function(obj) {
