@@ -1,6 +1,6 @@
 /*! DEQ Plugin: domEvent v1.0 */
 DigitalEventQueue.plugin = DigitalEventQueue.plugin || {};
-DigitalEventQueue.plugin.domEvent = function(domEvent,requiredAttribute,digitalEventQueue) {
+DigitalEventQueue.plugin.domEvent = function(domEvent,requiredAttribute,queueName) {
 
     document.addEventListener(domEvent, function(event){
 
@@ -31,10 +31,11 @@ DigitalEventQueue.plugin.domEvent = function(domEvent,requiredAttribute,digitalE
             getAttributesRecursive(event.target,data);
             
             if(requiredAttribute==null || typeof(requiredAttribute)=="undefined" || typeof(data[attributeToKey(requiredAttribute)])!="undefined") {
-                digitalEventQueue.push({ command: 'ADD EVENT', name: domEvent, data: data});
+                var queue = new DigitalEventQueue(queueName);
+                queue.push({ command: 'ADD EVENT', name: domEvent, data: data});
             }
         }
     });
 }
-/*! init plugin: domEvent(listenForDomEvent,requiredDataAttribute, DigitalEventQueue) */
-DigitalEventQueue.plugin.domEvent("click","data-demo-attribute",myQueue);
+/*! init plugin: domEvent(listenForDomEvent,requiredDataAttribute, queueName) */
+DigitalEventQueue.plugin.domEvent("click","data-demo-attribute","My Queue Name");
