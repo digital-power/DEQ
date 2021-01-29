@@ -1,4 +1,4 @@
-/*! DEQ Plugin: domEvent v1.0 */
+/*! DEQ Plugin: domEvent v1.01 */
 DigitalEventQueue.plugin = DigitalEventQueue.plugin || {};
 DigitalEventQueue.plugin.domEvent = function(domEvent,requiredAttribute,queueName) {
 
@@ -7,7 +7,7 @@ DigitalEventQueue.plugin.domEvent = function(domEvent,requiredAttribute,queueNam
         if(typeof(event.target)=="object" && event.target!=null) {
         
             var attributeToKey = function(attr) {
-                return attr.replace(/-/g,"_").replace(/data/g,domEvent).toLowerCase();
+                return attr.replace(/-/g,"_").replace(/data/,"html").toLowerCase();
             }
 
             var getAttributesRecursive = function(element,data) {
@@ -39,3 +39,4 @@ DigitalEventQueue.plugin.domEvent = function(domEvent,requiredAttribute,queueNam
 }
 /*! init plugin: domEvent(listenForDomEvent,requiredDataAttribute, queueName) */
 DigitalEventQueue.plugin.domEvent("click","data-demo-attribute","My Queue Name");
+DigitalEventQueue.plugin.domEvent("mousedown","data-demo-attribute","My Queue Name");
