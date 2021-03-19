@@ -1,10 +1,10 @@
-/*! DEQ Plugin: domEvent v1.01 */
+/*! DEQ Plugin: domEvent v1.02 */
 DigitalEventQueue.plugin = DigitalEventQueue.plugin || {};
 DigitalEventQueue.plugin.domEvent = function(domEvent,requiredAttribute,queueName) {
 
     document.addEventListener(domEvent, function(event){
 
-        if(typeof(event.target)=="object" && event.target!=null) {
+        if(typeof(event.target)=="object" && event.target!=null && typeof(event.target.getAttributeNames)=="function") {
         
             var attributeToKey = function(attr) {
                 return attr.replace(/-/g,"_").replace(/data/,"html").toLowerCase();
