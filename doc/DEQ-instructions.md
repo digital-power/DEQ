@@ -103,9 +103,11 @@ digitalEventQueue.push({
 
 The conditional definition of the queue (first line in example) is **strongly advised**, see [Command interface](#Command-interface)
 
-## GLOBAL DATA ##
+## GLOBAL DATA (beta) ##
+_this command is in beta, and could change with future updates_
 
 The `GLOBAL DATA` command is used to append data to the data-object of each event added to the queue.
+
 
 ### Properties ###
 
